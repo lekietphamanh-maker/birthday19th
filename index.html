@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0b0a1a" />
+    <title>Chasing my way! — memories me and you</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%230b0a1a'/><path d='M8 3l1.4 3 3.1.3-2.3 2.1.7 3-2.9-1.7L6 11.4l.7-3-2.3-2 3.2-.4z' fill='%23f7d36a'/></svg>"
+    />
+    <link
+      rel="preconnect"
+      href="https://fonts.googleapis.com"
+    />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Cormorant+Garamond:ital,wght@1,400;1,500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div id="game-shell">
+      <!-- Pixel canvas world -->
+      <canvas id="game" width="180" height="320" aria-label="game world"></canvas>
+
+      <!-- Top HUD bar -->
+      <header id="hud" class="overlay hidden" aria-hidden="true">
+        <button
+          id="journal-btn"
+          class="hud-btn"
+          aria-label="Open memory journal"
+        >
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <rect
+              x="2"
+              y="2"
+              width="12"
+              height="12"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1"
+            />
+            <line x1="5" y1="6" x2="11" y2="6" stroke="currentColor" />
+            <line x1="5" y1="9" x2="11" y2="9" stroke="currentColor" />
+            <line x1="5" y1="12" x2="9" y2="12" stroke="currentColor" />
+          </svg>
+        </button>
+        <div id="memory-count" class="hud-count">
+          <span class="star-icon" aria-hidden="true">★</span>
+          <span><span id="mem-have">0</span>/6</span>
+        </div>
+        <div id="key-count" class="hud-count">
+          <span class="star-icon" aria-hidden="true">⚿</span>
+          <span><span id="key-have">0</span>/6</span>
+        </div>
+        <button id="help-btn" class="hud-btn" aria-label="How to play">
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <circle
+              cx="8"
+              cy="8"
+              r="6"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1"
+            />
+            <text
+              x="8"
+              y="11"
+              text-anchor="middle"
+              font-family="VT323, monospace"
+              font-size="9"
+              fill="currentColor"
+            >
+              ?
+            </text>
+          </svg>
+        </button>
+      </header>
+
+      <!-- Floating "press to interact" hint -->
+      <div id="prompt" class="prompt hidden" aria-live="polite"></div>
+
+      <!-- Touch controls -->
+      <div id="controls" class="overlay hidden" aria-hidden="true">
+        <div id="dpad" aria-label="movement controls">
+          <button class="dpad-btn dpad-up" data-dir="up" aria-label="Up">▲</button>
+          <button class="dpad-btn dpad-left" data-dir="left" aria-label="Left">◀</button>
+          <button class="dpad-btn dpad-right" data-dir="right" aria-label="Right">▶</button>
+          <button class="dpad-btn dpad-down" data-dir="down" aria-label="Down">▼</button>
+          <div class="dpad-center" aria-hidden="true"></div>
+        </div>
+        <button id="action-btn" class="action-btn" aria-label="Interact">
+          <span>✦</span>
+        </button>
+      </div>
+
+      <!-- Start screen -->
+      <section id="start-screen" class="screen">
+        <div class="start-stars" aria-hidden="true"></div>
+        <div class="start-content">
+          <svg
+            class="logo"
+            viewBox="0 0 320 140"
+            preserveAspectRatio="xMidYMid meet"
+            role="img"
+            aria-label="Chasing my way! memories me and you"
+          >
+            <defs>
+              <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="1.4" result="b" />
+                <feMerge>
+                  <feMergeNode in="b" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+            <!-- subtitle line -->
+            <text
+              x="160" y="16"
+              text-anchor="middle"
+              fill="#a89cd6"
+              font-family="VT323, monospace"
+              font-size="15"
+              letter-spacing="1.5"
+            >Happy birthday 19th bé iu &lt;3</text>
+
+            <!-- title message -->
+            <text
+              x="160" y="58"
+              text-anchor="middle"
+              fill="#e9e3ff"
+              font-family="'Press Start 2P', monospace"
+              font-size="16"
+              letter-spacing="2"
+            >Chasing my way!</text>
+
+            <text
+              x="160" y="94"
+              text-anchor="middle"
+              fill="#f7d36a"
+              font-family="'Cormorant Garamond', serif"
+              font-style="italic"
+              font-size="20"
+              letter-spacing="0"
+              filter="url(#glow)"
+            >memories me and you</text>
+
+            <!-- small stars -->
+            <g fill="#f7d36a" filter="url(#glow)">
+              <rect x="32" y="50" width="2" height="2"/>
+              <rect x="30" y="52" width="6" height="2"/>
+              <rect x="32" y="54" width="2" height="2"/>
+              <rect x="286" y="110" width="2" height="2"/>
+              <rect x="284" y="112" width="6" height="2"/>
+              <rect x="286" y="114" width="2" height="2"/>
+            </g>
+          </svg>
+
+          <p class="start-tag">a lucid dream in pixels</p>
+
+          <button id="start-btn" class="primary-btn" data-testid="button-start">
+            Good night!<br />
+            Have a nice dream
+          </button>
+
+          <button id="how-btn" class="ghost-btn" data-testid="button-how">
+            how to play
+          </button>
+
+          <p class="credit-line">
+            made with love
+          </p>
+        </div>
+      </section>
+
+      <!-- How-to-play card -->
+      <section id="how-screen" class="screen hidden">
+        <div class="panel">
+          <h2 class="panel-title">how to play</h2>
+          <ul class="how-list">
+            <li><b>move</b> — arrow keys / WASD on desktop, D-pad on phone</li>
+            <li><b>interact</b> — space / enter, or the ✦ button</li>
+            <li>walk near a <span class="hl-star">★ star</span>, a <span class="hl-note">note</span>, or a <span class="hl-frame">picture frame</span> and press interact</li>
+            <li>each remember block gives a hint for that memory puzzle</li>
+            <li>each solved puzzle unlocks a picture, then turns into a key</li>
+            <li>collect all <b>6 keys</b> to unlock the big memory and open the ending</li>
+          </ul>
+          <button id="how-back" class="primary-btn">got it</button>
+        </div>
+      </section>
+
+      <!-- Intro cutscene -->
+      <section id="intro-screen" class="screen hidden">
+        <canvas id="intro-canvas" width="180" height="320"></canvas>
+        <div id="intro-text" class="intro-text"></div>
+        <button id="intro-skip" class="ghost-btn intro-skip">skip ▸</button>
+      </section>
+
+      <!-- Note / dialog modal -->
+      <section id="note-screen" class="screen hidden">
+        <div class="note-card">
+          <div class="note-corner tl"></div>
+          <div class="note-corner tr"></div>
+          <div class="note-corner bl"></div>
+          <div class="note-corner br"></div>
+          <h3 id="note-title" class="note-title"></h3>
+          <p id="note-body" class="note-body"></p>
+          <button id="note-close" class="primary-btn">close</button>
+        </div>
+      </section>
+
+      <!-- Memory puzzle modal -->
+      <section id="puzzle-screen" class="screen hidden">
+        <div class="puzzle-card">
+          <p class="puzzle-label">dream puzzle</p>
+          <h3 id="puzzle-title" class="puzzle-title"></h3>
+          <p id="puzzle-prompt" class="puzzle-prompt"></p>
+          <div id="puzzle-options" class="puzzle-options"></div>
+          <div class="puzzle-pad" aria-label="puzzle movement controls">
+            <button class="pad-mini up" data-puzzle-move="up" aria-label="move puzzle up">▲</button>
+            <button class="pad-mini left" data-puzzle-move="left" aria-label="move puzzle left">◀</button>
+            <button class="pad-mini right" data-puzzle-move="right" aria-label="move puzzle right">▶</button>
+            <button class="pad-mini down" data-puzzle-move="down" aria-label="move puzzle down">▼</button>
+          </div>
+          <p id="puzzle-feedback" class="puzzle-feedback" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <!-- Memory unlock celebration -->
+      <section id="unlock-screen" class="screen hidden">
+        <div class="unlock-content">
+          <div class="unlock-star" aria-hidden="true">★</div>
+          <p class="unlock-label">memory unlocked</p>
+          <h2 id="unlock-title" class="unlock-title"></h2>
+          <p id="unlock-line" class="unlock-line"></p>
+          <div id="picture-reveal" class="picture-reveal" aria-label="whole picture pieces"></div>
+          <p id="picture-reveal-caption" class="picture-reveal-caption"></p>
+          <button id="unlock-close" class="primary-btn">keep going</button>
+        </div>
+      </section>
+
+      <!-- Journal -->
+      <section id="journal-screen" class="screen hidden">
+        <div class="journal">
+          <header class="journal-head">
+            <h2 class="panel-title">the journal</h2>
+            <button id="journal-close" class="x-btn" aria-label="Close journal">×</button>
+          </header>
+          <div id="journal-grid" class="journal-grid"></div>
+          <p class="journal-foot">tap a memory to read it again</p>
+        </div>
+      </section>
+
+      <!-- Memory detail (viewing an unlocked memory) -->
+      <section id="memory-view" class="screen hidden">
+        <div class="memory-view-content">
+          <button id="memory-view-back" class="x-btn back" aria-label="Back">←</button>
+          <div class="memory-frame" id="memory-frame"></div>
+          <h2 id="memory-view-title" class="memory-view-title"></h2>
+          <p id="memory-view-body" class="memory-view-body"></p>
+          <p class="memory-view-hint" id="memory-view-hint"></p>
+        </div>
+      </section>
+
+      <!-- Help / instructions panel -->
+      <section id="help-screen" class="screen hidden">
+        <div class="panel help-panel">
+          <header class="journal-head">
+            <h2 class="panel-title">how to play</h2>
+            <button id="help-close" class="x-btn" aria-label="Close">×</button>
+          </header>
+          <p class="help-lede">
+            chase the light, read each remember block, solve the room puzzle,
+            then touch the glowing frame to unlock a memory key.
+          </p>
+          <h3 class="help-sub">controls</h3>
+          <p class="help-note">move with the direction pad or arrow keys / WASD.</p>
+          <p class="help-note">press the glowing action button, space, enter, or E to read and remember.</p>
+          <h3 class="help-sub">goal</h3>
+          <p class="help-note">collect all 6 keys to open the big memory, then follow the final light to the video.</p>
+        </div>
+      </section>
+
+      <!-- Final 2D chase cutscene -->
+      <section id="final-cutscene-screen" class="screen hidden">
+        <canvas id="final-cutscene-canvas" width="180" height="320"></canvas>
+        <div id="final-cutscene-text" class="intro-text final-cutscene-text"></div>
+      </section>
+
+      <!-- Big memory screen -->
+      <section id="ending-screen" class="screen hidden">
+        <div class="ending">
+          <div class="ending-stars" aria-hidden="true"></div>
+          <h2 class="ending-title">big memory unlocked.</h2>
+          <p class="ending-sub">
+            the big memory opens.
+          </p>
+
+          <div class="big-memory-frame">
+            <img id="big-memory-img" alt="big memory photo" />
+          </div>
+
+          <p class="ending-letter" id="ending-letter">
+            this is my favorite picture of us. that day was fun and really tiring.
+            i planned the whole day before, woke up at 5 to pick you up, and somehow
+            still made it through our long trip.<br /><br />
+            thank you for accepting me, forgiving me, and choosing to listen even when
+            we misunderstand each other. i am sorry for the times i made you mad,
+            even when i never meant to. i know i still cannot meet every expectation,
+            but i promise i will try to be better day by day: do more, act more,
+            and listen more.<br /><br />
+            i do not know what will happen in the future, but i hope we can keep
+            seeing the path ahead together. i love you, and i will always love you,
+            my lil kitten. happy 19th birthday.<br />
+            <span class="ending-sign">— from your love, Kiet</span>
+          </p>
+
+          <div class="ending-actions">
+            <button id="play-final-video" class="primary-btn">start the final chase</button>
+            <button id="ending-replay" class="ghost-btn">dream again</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Last video screen -->
+      <section id="video-ending-screen" class="screen hidden">
+        <div class="ending video-ending">
+          <div class="ending-stars" aria-hidden="true"></div>
+          <h2 class="ending-title">last video.</h2>
+          <p class="ending-sub">At the end of the day, I’ll still be there for you.</p>
+
+          <div class="video-frame" id="video-frame">
+            <video
+              id="ending-video"
+              controls
+              playsinline
+              preload="metadata"
+            ></video>
+            <div class="video-placeholder" id="video-placeholder">
+              <div class="video-pixel-heart" aria-hidden="true"></div>
+              <p>
+                <b>video slot</b><br />
+                drop a clip via the <b>?</b> menu, or replace
+                <code>assets/video/ending.mp4</code>.
+              </p>
+            </div>
+          </div>
+
+          <div class="ending-actions">
+            <button id="video-back-memory" class="ghost-btn">back to big memory</button>
+            <button id="video-replay" class="ghost-btn">dream again</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Config (overridable) -->
+    <script src="./config.js"></script>
+    <script src="./game.js"></script>
+  </body>
+</html>
